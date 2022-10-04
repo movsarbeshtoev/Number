@@ -3,9 +3,21 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  .Order {
+    overflow: auto;
+    height: 80vh;
+  }
   .centralBlock {
     height: 80vh;
-    display: flex;
-    align-items: flex-end;
+
+    padding: 10vh;
+
+    background-color: rgb(140, 175, 250);
+
+    .blockLi {
+      display: flex;
+
+      margin-top: 15px;
+    }
   }
 }

@@ -43,27 +43,29 @@ function NewOrder() {
 
   return (
     <div className={Style.newOrder}>
+      <Link to="/">
+        <button>ShowOrder</button>
+      </Link>
       <div className={Style.centralBlock}>
-        <h1>
-          {orders.map((obj, index) => {
-            return (
-              <div key={index}>
-                <li>{obj}</li>
-                <button onClick={() => remove(index)}>Выполнен</button>
-              </div>
-            );
-          })}
-        </h1>
-        <div>
+        <div className={Style.blockImput}>
           <input
             onChange={(event) => setNumber(event.target.value)}
             value={number}
             type={"number"}
           />
           <button onClick={() => onclickSetOrder()}>Добавить</button>
-          <Link to="/">
-            <button>ShowOrder</button>
-          </Link>
+        </div>
+        <div className={Style.Order}>
+          <ul>
+            {orders.map((obj, index) => {
+              return (
+                <div className={Style.blockLi} key={index}>
+                  <li>{obj}</li>
+                  <button onClick={() => remove(index)}>Выполнен</button>
+                </div>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </div>
