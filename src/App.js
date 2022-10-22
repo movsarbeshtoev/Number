@@ -6,7 +6,6 @@ import { Routes, Route } from "react-router-dom";
 import NewOrder from "./compoents/newOrder/index";
 import ShowOrder from "./compoents/showOrder";
 function App() {
-  alert(213);
   return (
     <div className="App">
       <Routes>
