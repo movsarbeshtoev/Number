@@ -19,6 +19,23 @@ function NewOrder() {
     setNumber(Number(event.target.value));
   };
 
+  // Воспроизводит любое аудио
+  function playAudio(fileName) {
+    // Промис использую для того, чтобы через "await" ждать завершения аудио
+    // см. внизу в функцию "onclickSetOrder"
+    return new Promise((resolve) => {
+      // Создаем аудио по названию файла fileName
+      const audio = new Audio(`/mp3/${fileName}.mp3`);
+      // Сразу воспроизводим аудио
+      audio.play();
+
+      // Ставим обработчик события на завершение воспроизведения аудио.
+      // Когда аудио завершится, то вызовется функция resolve
+      // Проще говоря, это завершение выполнения промиса
+      audio.addEventListener('ended', resolve);
+    });
+  }
+
   // Воспроизводим одно целое число или несколько чисел
   async function playNumbers(value) {
     // Получаемстаток от десятичного числа
@@ -44,17 +61,6 @@ function NewOrder() {
     // Ты можешь проверить разницу, закоментировав верхнее воспроизведение и оставив ниже код
     // playAudio(bigNumb);
     // setTimeout(() => playAudio(restNumb), 800);
-  }
-
-  // Воспроизводит любое аудио
-  function playAudio(fileName) {
-    // Промис использую для того, чтобы через "await" ждать завершения аудио
-    // см. внизу в функцию "onclickSetOrder"
-    return new Promise((resolve) => {
-      const audio = new Audio(`/mp3/${fileName}.mp3`);
-      audio.addEventListener('ended', resolve);
-      audio.play();
-    });
   }
 
   const addOrderAndCleanForm = () => {
