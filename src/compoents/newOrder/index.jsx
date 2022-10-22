@@ -1,62 +1,85 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { removeOrder, setOrder } from "../../Slice/orderSlice";
-import { Link } from "react-router-dom";
-import Style from "./newOrder.module.scss";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeOrder, setOrder } from '../../Slice/orderSlice';
+import { Link } from 'react-router-dom';
+import Style from './newOrder.module.scss';
 
 function NewOrder() {
-  const [number, setNumber] = useState("");
-  const orders = useSelector((state) => state.orderSlice.order);
   const dispatch = useDispatch();
-  const [num, setNum] = useState([]);
+  const orders = useSelector((state) => state.orderSlice.order);
   const inputRef = React.useRef();
 
-  const mass = number.split("");
-  console.log(num);
+  const [number, setNumber] = useState('');
 
-  const remove = (index) => {
+  const onClickOrder = (index) => {
     dispatch(removeOrder(index));
-    setNum(...num, mass);
   };
 
-  const addOrder = (event) => {
-    setNumber(event.target.value);
-    console.log(event);
+  const onChangeInput = (event) => {
+    setNumber(Number(event.target.value));
   };
 
-  const onclickSetOrder = async () => {
-    if (!number == "") {
-      dispatch(setOrder(number));
-      setNumber("");
-      inputRef.current.focus();
-      const main = new Audio(`/mp3/main.mp3`);
-      main.play();
-    } else {
-      alert("добавьте заказ");
+  // Воспроизводим одно целое число или несколько чисел
+  async function playNumbers(value) {
+    // Получаемстаток от десятичного числа
+    const restNumb = value % 10; // 46 % 10 = 6
+
+    // Получаем десятичное число
+    const bigNumb = value - restNumb; // 46 - 6 = 40
+
+    // Теперь у нас есть "40" и "6" по отдельности.
+
+    // Если число от 11 до 19, то воспроизводим отдельные аудио
+    if (value >= 11 && value <= 19) {
+      await playAudio(value);
+      return;
     }
 
-    setTimeout(() => {
-      if (+number > 24) {
-        const firstNumber = Number(`${+mass[0]}0`);
-        const lastNumber = +mass[1];
+    // Иначе воспроизводим по кускам данное число
+    await playAudio(bigNumb);
+    await playAudio(restNumb);
 
-        const audioFirst = new Audio(`/mp3/${firstNumber}.mp3`);
-        audioFirst.play();
-        console.log(Audio);
-        if (lastNumber > 0) {
-          setTimeout(() => {
-            const audioSecond = new Audio(`/mp3/${lastNumber}.mp3`);
-            audioSecond.play();
-          }, 1000);
-        }
-      } else {
-        const audio = new Audio(`/mp3/${number}.mp3`);
-        audio.play();
-      }
-    }, 2000);
+    // Или можно сделать воспроизведение чуть быстрей
+    // Я сделал ниже код без "await", чтобы чуть быстрей воспроизводил номер заказа (тут уже на усмотрение)
+    // Ты можешь проверить разницу, закоментировав верхнее воспроизведение и оставив ниже код
+    // playAudio(bigNumb);
+    // setTimeout(() => playAudio(restNumb), 800);
+  }
+
+  // Воспроизводит любое аудио
+  function playAudio(fileName) {
+    // Промис использую для того, чтобы через "await" ждать завершения аудио
+    // см. внизу в функцию "onclickSetOrder"
+    return new Promise((resolve) => {
+      const audio = new Audio(`/mp3/${fileName}.mp3`);
+      audio.addEventListener('ended', resolve);
+      audio.play();
+    });
+  }
+
+  const addOrderAndCleanForm = () => {
+    dispatch(setOrder(number));
+    setNumber('');
+    inputRef.current.focus();
   };
-  const handleSubmit = (event) => {
-    event.preventDefault();
+
+  const onClickAddOrder = async () => {
+    if (!number) {
+      return alert('Укажите номер заказа!');
+    }
+
+    if (number > 50) {
+      return alert('Слишком большой номер заказа!');
+    }
+
+    // Добавляем заказ в список и очищаем поле
+    addOrderAndCleanForm();
+
+    // Воспроизводим "Заказ номер" и ждём его завершения
+    await playAudio('main');
+
+    // Потом воспроизводим номер заказа
+    await playNumbers(number);
   };
 
   return (
@@ -67,19 +90,19 @@ function NewOrder() {
       <div className={Style.mainBlock}>
         <div className={Style.centralBlock}>
           <div className={Style.logo}>
-            <form onSubmit={handleSubmit} className={Style.blockInput}>
+            <div className={Style.blockInput}>
               <input
                 ref={inputRef}
-                onChange={(event) => addOrder(event)}
+                onChange={(event) => onChangeInput(event)}
                 value={number}
-                type={"number"}
+                type={'number'}
                 min="1"
-                max="100"
+                max="50"
               />
-              <button type="submit" onClick={() => onclickSetOrder()}>
+              <button type="submit" onClick={() => onClickAddOrder()}>
                 Готов
               </button>
-            </form>
+            </div>
           </div>
 
           <div className={Style.Order}>
@@ -87,7 +110,7 @@ function NewOrder() {
               {orders.map((obj, index) => {
                 return (
                   <div className={Style.blockLi} key={index}>
-                    <li onClick={() => remove(index)}>{obj}</li>
+                    <li onClick={() => onClickOrder(index)}>{obj}</li>
                   </div>
                 );
               })}
