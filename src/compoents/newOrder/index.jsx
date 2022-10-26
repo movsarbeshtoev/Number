@@ -75,7 +75,9 @@ function NewOrder() {
         });
       }
       setStartAudio(false);
-      setAudioMass(audioMass.shift());
+      const Arr = audioMass.shift();
+      console.log(Arr);
+      setAudioMass(audioMass.filter((item) => item !== Arr));
       if (audioMass.length > 0) {
         // console.log(audioMass);
 
@@ -83,7 +85,7 @@ function NewOrder() {
       }
     });
 
-    console.log("Срабатывает первее");
+    console.log(audioMass);
 
     // return new Promise((resolve) => {
     //   const audio = new Audio(`/mp3/main.mp3`);
